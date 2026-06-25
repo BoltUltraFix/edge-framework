@@ -1,0 +1,26 @@
+﻿# EdgeFramework — Configuración de ejemplo
+framework:
+  name: "Mi Bot"
+  mode: "live"  # live | demo | backtest
+  log_level: "INFO"
+
+risk:
+  risk_per_trade: 0.01  # 1% por trade
+  max_daily_drawdown: 0.05  # 5%
+  max_trades_per_day: 10
+
+execution:
+  max_retries: 3
+  retry_delay_ms: 300
+  spread_check: true
+
+audit:
+  enabled: true
+  log_path: "logs/"
+  intelligence_report: true
+
+connector:
+  type: "mt5"  # mt5 | topstep | paper
+  symbols:
+    - "XAUUSD"
+    - "US100"
