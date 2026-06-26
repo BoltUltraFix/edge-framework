@@ -444,23 +444,6 @@
       display: block;
     }
 
-    .form-error {
-      display: none;
-      margin-top: 1rem;
-      color: #ff6b6b;
-      font-weight: 500;
-    }
-
-    .form-error.show {
-      display: block;
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
     /* Footer */
     footer {
       padding: 3rem 0;
@@ -496,11 +479,6 @@
   </style>
 </head>
 <body>
-
-  <!-- Formulario oculto: Netlify lo detecta en el build -->
-  <form name="waitlist" netlify netlify-honeypot="bot-field" hidden>
-    <input type="email" name="email">
-  </form>
 
   <nav>
     <div class="container">
@@ -643,25 +621,11 @@ engine.start_from_config()
         EdgeFramework abre beta cerrada en Septiembre 2026.
         Únete a la lista de espera y sé el primero en acceder.
       </p>
-      <form
-        class="waitlist-form"
-        id="waitlist-form"
-        name="waitlist"
-        method="POST"
-        action="/gracias"
-        data-netlify="true"
-        netlify-honeypot="bot-field"
-        novalidate
-      >
-        <input type="hidden" name="form-name" value="waitlist">
-        <p hidden>
-          <label>No completar: <input name="bot-field" tabindex="-1" autocomplete="off"></label>
-        </p>
-        <input type="email" name="email" placeholder="tu@email.com" required aria-label="Email" autocomplete="email">
+      <form class="waitlist-form" id="waitlist-form" novalidate>
+        <input type="email" name="email" placeholder="tu@email.com" required aria-label="Email">
         <button type="submit" class="btn-primary">Quiero acceso anticipado</button>
       </form>
       <p class="form-success" id="form-success">¡Gracias! Te avisaremos cuando abra la beta.</p>
-      <p class="form-error" id="form-error">No se pudo enviar. Inténtalo de nuevo en un momento.</p>
     </div>
   </section>
 
@@ -689,44 +653,22 @@ engine.start_from_config()
     // Hero visible on load
     document.querySelector('.hero .reveal')?.classList.add('visible');
 
-    // Waitlist form → Netlify Forms
-    document.getElementById('waitlist-form').addEventListener('submit', async function (e) {
+    // Waitlist form
+    document.getElementById('waitlist-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      const form = this;
-      const input = form.querySelector('input[type="email"]');
-      const btn = form.querySelector('button[type="submit"]');
-      const successEl = document.getElementById('form-success');
-      const errorEl = document.getElementById('form-error');
+      const input = this.querySelector('input[type="email"]');
       const email = input.value.trim();
-
-      successEl.classList.remove('show');
-      errorEl.classList.remove('show');
-
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         input.focus();
         input.style.borderColor = '#ff4444';
         return;
       }
       input.style.borderColor = '';
-
-      btn.disabled = true;
-      const btnLabel = btn.textContent;
-      btn.textContent = 'Enviando…';
-
-      try {
-        const body = new URLSearchParams(new FormData(form)).toString();
-        const res = await fetch('/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body
-        });
-        if (!res.ok) throw new Error('Netlify form submit failed');
-        window.location.href = '/gracias';
-      } catch (err) {
-        btn.disabled = false;
-        btn.textContent = btnLabel;
-        errorEl.classList.add('show');
-      }
+      const list = JSON.parse(localStorage.getItem('edgeframework_waitlist') || '[]');
+      if (!list.includes(email)) list.push(email);
+      localStorage.setItem('edgeframework_waitlist', JSON.stringify(list));
+      this.style.display = 'none';
+      document.getElementById('form-success').classList.add('show');
     });
   </script>
 </body>

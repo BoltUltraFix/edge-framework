@@ -648,7 +648,7 @@ engine.start_from_config()
         id="waitlist-form"
         name="waitlist"
         method="POST"
-        action="/gracias"
+        action="gracias.html"
         data-netlify="true"
         netlify-honeypot="bot-field"
         novalidate
@@ -721,7 +721,7 @@ engine.start_from_config()
           body
         });
         if (!res.ok) throw new Error('Netlify form submit failed');
-        window.location.href = '/gracias';
+        window.location.href = 'gracias.html';
       } catch (err) {
         btn.disabled = false;
         btn.textContent = btnLabel;
