@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  edge-framework:
+    build: .
+    container_name: edge-framework
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - ./logs:/app/logs
+    environment:
+      - TZ=Europe/Madrid
+    restart: unless-stopped
+
+  # Monitor de estado (opcional)
+  status-api:
+    build: .
+    container_name: edge-status
+    ports:
+      - "8081:8080"
+    command: uvicorn edge_framework.api.status:app --host 0.0.0.0 --port 8080
+    restart: unless-stopped
