@@ -16,11 +16,6 @@ connector:
     - "XAUUSD"
     - "US30.cash"
     - "US100.cash"
-  instrument_map:
-    XAUUSD: "XAUUSD"
-    US30: "US30.cash"
-    US100: "US100.cash"
-    XAGUSD: "XAGUSD"
   mt5:
     login: 0
     password: ""
@@ -30,11 +25,6 @@ connector:
     username: ""
     api_key: ""
     account_id: ""
-    instrument_map:
-      XAUUSD: "MGC"
-      US30: "MYM"
-      US100: "MNQ"
-      XAGUSD: "SIL"
 
 # Gestión de riesgo
 risk:

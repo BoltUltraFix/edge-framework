@@ -218,11 +218,7 @@ class RiskManager:
             return RiskDecision(False, reason)
 
         # NIVEL 4 — Position exists
-        broker_symbol = (signal.metadata or {}).get('broker_symbol')
-        match_symbols = {signal.symbol}
-        if broker_symbol:
-            match_symbols.add(broker_symbol)
-        symbol_positions = [p for p in open_positions if p.symbol in match_symbols]
+        symbol_positions = [p for p in open_positions if p.symbol == signal.symbol]
         if symbol_positions:
             return RiskDecision(False, "position_exists")
 

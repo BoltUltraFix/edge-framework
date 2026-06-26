@@ -29,7 +29,12 @@ class PaperConnector(BrokerConnector):
         self._positions: Dict[int, Position] = {}
         self._ticket_counter = 1000
         self._connected = False
-        self._prices: Dict[str, float] = {}
+        self._prices = {
+            "XAUUSD": 2350.0,
+            "US100":  19500.0,
+            "US30":   39000.0,
+            "XAGUSD": 28.0,
+        }
 
     def connect(self) -> bool:
         self._connected = True
@@ -43,15 +48,10 @@ class PaperConnector(BrokerConnector):
     def is_connected(self) -> bool:
         return self._connected
 
-    def _seed_price(self, symbol: str) -> float:
-        if symbol not in self._prices:
-            self._prices[symbol] = 100.0 + (hash(symbol) % 10000) / 10.0
-        return self._prices[symbol]
-
     def get_candles(self, symbol: str, timeframe: str, count: int = 500) -> List[Candle]:
         """Genera velas sintéticas para testing."""
         candles = []
-        base = self._seed_price(symbol)
+        base = self._prices.get(symbol, 100.0)
         ts = time.time() - count * 300
         for i in range(count):
             noise = random.gauss(0, base * 0.001)
@@ -64,7 +64,7 @@ class PaperConnector(BrokerConnector):
         return candles
 
     def get_price(self, symbol: str) -> Dict[str, float]:
-        price = self._seed_price(symbol)
+        price = self._prices.get(symbol, 100.0)
         spread = price * 0.0001
         return {"bid": price - spread/2, "ask": price + spread/2, "spread": spread}
 

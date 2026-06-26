@@ -100,11 +100,10 @@ def _evaluate_symbol(engine, symbol: str, account, all_positions: list) -> None:
     connector = engine._connector
     risk = engine._risk_manager
     auditor = engine._auditor
-    broker_symbol = engine.instrument_mapper.to_broker(symbol)
 
     # Obtener velas — siempre usar iloc[-2] (vela cerrada)
     try:
-        candles = connector.get_candles(broker_symbol, "M5", count=500)
+        candles = connector.get_candles(symbol, "M5", count=500)
         if not candles or len(candles) < 3:
             logger.debug(f"[{symbol}] Velas insuficientes: {len(candles) if candles else 0}")
             return
@@ -136,8 +135,6 @@ def _evaluate_symbol(engine, symbol: str, account, all_positions: list) -> None:
             logger.warning(f"[{symbol}] Señal inválida de {signal.strategy_id}")
             continue
 
-        signal.metadata['broker_symbol'] = broker_symbol
-
         # Evaluar riesgo
         if risk:
             decision = risk.evaluate(signal, account, all_positions)
@@ -166,11 +163,11 @@ def _evaluate_symbol(engine, symbol: str, account, all_positions: list) -> None:
             continue
 
         # Ejecutar orden
-        _execute_signal(engine, signal, decision, account, broker_symbol)
+        _execute_signal(engine, signal, decision, account)
         break  # Un trade por símbolo por ciclo
 
 
-def _execute_signal(engine, signal, decision, account, broker_symbol: str = None) -> None:
+def _execute_signal(engine, signal, decision, account) -> None:
     """Ejecuta una señal aprobada."""
     from edge_framework.connectors.base import OrderRequest, OrderDirection
 
@@ -179,10 +176,9 @@ def _execute_signal(engine, signal, decision, account, broker_symbol: str = None
     auditor = engine._auditor
 
     direction = OrderDirection.BUY if signal.direction == "buy" else OrderDirection.SELL
-    order_symbol = broker_symbol or signal.metadata.get('broker_symbol') or engine.instrument_mapper.to_broker(signal.symbol)
 
     order = OrderRequest(
-        symbol=order_symbol,
+        symbol=signal.symbol,
         direction=direction,
         volume=decision.suggested_volume,
         sl_distance=signal.sl_distance,
@@ -210,7 +206,7 @@ def _execute_signal(engine, signal, decision, account, broker_symbol: str = None
     if auditor and result.ticket:
         # Snapshot de mercado
         try:
-            price = connector.get_price(order_symbol)
+            price = connector.get_price(signal.symbol)
             spread = price.get('spread', 0)
         except Exception:
             spread = 0

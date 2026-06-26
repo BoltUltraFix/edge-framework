@@ -1,0 +1,27 @@
+# Cambiar solo el tipo de conector
+# La estrategia NO cambia
+framework:
+  name: "Momentum Strategy"
+  mode: "paper"
+  interval_seconds: 30
+
+connector:
+  type: "paper"     # Cambiar a "mt5" o "topstep" sin tocar strategy.py
+  symbols:
+    - "XAUUSD"
+    - "US30.cash"
+  instrument_map:
+    XAUUSD: "XAUUSD"
+    US30: "US30.cash"
+
+risk:
+  risk_per_trade: 0.01
+  max_daily_drawdown: 0.05
+  max_trades_per_day: 5
+  circuit_breaker_pct: 0.08
+  min_volume: 0.01
+  max_volume: 2.0
+
+audit:
+  enabled: true
+  log_path: "logs"

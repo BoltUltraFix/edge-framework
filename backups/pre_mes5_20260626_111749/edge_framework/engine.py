@@ -15,8 +15,6 @@ import yaml
 import logging
 from pathlib import Path
 
-from edge_framework.connectors.instrument_mapper import InstrumentMapper
-
 logger = logging.getLogger(__name__)
 
 
@@ -70,7 +68,6 @@ class ExecutionEngine:
         self._connector = None
         self._risk_manager = None
         self._auditor = None
-        self._instrument_mapper = InstrumentMapper(self._config)
         logger.info(f"EdgeFramework iniciado — modo: {self._config.get('framework', {}).get('mode', 'demo')}")
 
     def _load_config(self, config_path: str, config_dict: Dict) -> Dict:
@@ -215,7 +212,3 @@ class ExecutionEngine:
     @property
     def is_running(self) -> bool:
         return self._running
-
-    @property
-    def instrument_mapper(self):
-        return self._instrument_mapper
