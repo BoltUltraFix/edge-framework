@@ -1,0 +1,22 @@
+framework:
+  name: "EMA Cross Strategy"
+  mode: "paper"
+  interval_seconds: 30
+
+connector:
+  type: "paper"
+  symbols:
+    - "XAUUSD"
+    - "US30.cash"
+
+risk:
+  risk_per_trade: 0.01
+  max_daily_drawdown: 0.05
+  max_trades_per_day: 5
+  circuit_breaker_pct: 0.08
+  min_volume: 0.01
+  max_volume: 2.0
+
+audit:
+  enabled: true
+  log_path: "logs"
