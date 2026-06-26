@@ -1,0 +1,33 @@
+# Copia este archivo como config.yaml y edita tus credenciales.
+# NUNCA subas config.yaml con passwords reales a GitHub.
+
+framework:
+  name: "Mi Bot"
+  mode: "paper"
+  interval_seconds: 30
+  log_level: "INFO"
+
+connector:
+  type: "paper"
+  symbols:
+    - "XAUUSD"
+  instrument_map:
+    XAUUSD: "XAUUSD"
+    US30: "US30.cash"
+
+risk:
+  risk_per_trade: 0.01
+  max_daily_drawdown: 0.05
+  max_trades_per_day: 5
+  circuit_breaker_pct: 0.08
+  min_volume: 0.01
+  max_volume: 2.0
+
+audit:
+  enabled: true
+  log_path: "logs"
+
+# Opcional — plan PRO (tras pago Stripe)
+# license:
+#   api_key: "EF-XXXX-XXXX-XXXX"
+#   plan: "pro"

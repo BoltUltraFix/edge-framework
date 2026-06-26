@@ -1,8 +1,43 @@
-﻿__pycache__/
-*.pyc
+# Python
+__pycache__/
+*.py[cod]
 *.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Entorno
 .env
+.venv/
+venv/
+env/
+
+# Logs y datos
 logs/
 *.log
 *.jsonl
+data/
+
+# Credenciales y licencias
+config_live.yaml
+*_credentials*
+*_secrets*
+api_keys.txt
+
+# Backups
+backups/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Docker
+.docker/
+
+# OS
 .DS_Store
+Thumbs.db
