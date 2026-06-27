@@ -29,6 +29,7 @@ api_keys.txt
 
 # Backups
 backups/
+*.bak
 
 # IDE
 .vscode/
