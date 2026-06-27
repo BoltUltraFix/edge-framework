@@ -9,6 +9,14 @@
 
 ---
 
+ **[edgeframework.netlify.app](https://edgeframework.netlify.app)** — Landing page y lista de espera
+
+ **[Discord](https://discord.gg/gzPNgVcx8)** — Comunidad y soporte
+
+---
+
+---
+
 ## El problema
 
 El 90% del tiempo de un trader algorítmico no se gasta en la estrategia. Se gasta en infraestructura.
