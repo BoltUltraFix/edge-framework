@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EdgeFramework — Setup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .logo { font-weight: 900; font-size: 1.25rem; margin-bottom: 2rem; }
+    .logo span { color: #00d4aa; }
+    .screen { display: none; width: 100%; max-width: 520px; text-align: center; }
+    .screen.active { display: block; }
+    h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #888; font-size: 1rem; margin-bottom: 2rem; line-height: 1.6; }
+    .options { display: grid; gap: 0.75rem; margin-bottom: 2rem; text-align: left; }
+    .option {
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .option:hover { border-color: rgba(0, 212, 170, 0.4); }
+    .option.selected { border-color: #00d4aa; background: rgba(0, 212, 170, 0.08); }
+    .option-title { font-weight: 600; margin-bottom: 0.25rem; }
+    .option-desc { font-size: 0.85rem; color: #888; }
+    .btn {
+      display: inline-block;
+      padding: 0.875rem 2rem;
+      background: #00d4aa;
+      color: #000;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      text-decoration: none;
+    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-secondary {
+      background: transparent;
+      color: #888;
+      border: 1px solid #333;
+      margin-right: 0.75rem;
+    }
+    .steps { text-align: left; margin: 2rem 0; }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      color: #555;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+    .step.done { color: #fff; }
+    .step.done .step-icon {
+      border-color: #00d4aa;
+      background: #00d4aa;
+      color: #000;
+    }
+    #ready-msg {
+      display: none;
+      color: #00d4aa;
+      font-weight: 600;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+    }
+    #ready-msg.show { display: block; }
+    #btn-dashboard { display: none; }
+    .progress { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; }
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #333;
+    }
+    .progress-dot.active { background: #00d4aa; }
+    .actions { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+
+  <div class="logo">Edge<span>Framework</span></div>
+
+  <div class="progress">
+    <div class="progress-dot active" id="dot-1"></div>
+    <div class="progress-dot" id="dot-2"></div>
+    <div class="progress-dot" id="dot-3"></div>
+  </div>
+
+  <!-- Screen 1: Experience level -->
+  <div class="screen active" id="screen-1">
+    <h1>What's your experience level?</h1>
+    <p class="subtitle">We'll tailor your setup based on your trading background.</p>
+    <div class="options">
+      <div class="option" onclick="selectLevel('beginner', this)">
+        <div class="option-title">Beginner</div>
+        <div class="option-desc">New to algorithmic trading. Start with demo mode.</div>
+      </div>
+      <div class="option" onclick="selectLevel('intermediate', this)">
+        <div class="option-title">Intermediate</div>
+        <div class="option-desc">Some experience with bots or prop firm rules.</div>
+      </div>
+      <div class="option" onclick="selectLevel('advanced', this)">
+        <div class="option-title">Advanced</div>
+        <div class="option-desc">Ready to connect a live broker account.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Environment -->
+  <div class="screen" id="screen-2">
+    <h1>Choose your environment</h1>
+    <p class="subtitle">You can start in demo mode. No setup required.</p>
+    <div class="options">
+      <div class="option" id="opt-demo" onclick="selectEnv('demo')">
+        <div class="option-title">Demo Mode</div>
+        <div class="option-desc">Paper trading with simulated data. Zero risk.</div>
+      </div>
+      <div class="option" id="opt-broker" onclick="selectEnv('broker')">
+        <div class="option-title">Connect Broker</div>
+        <div class="option-desc">MT5 or Topstep. Requires credentials in config.yaml.</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goToScreen(1)">Back</button>
+      <button class="btn" id="btn-continue" disabled onclick="startSetup()">Continue</button>
+    </div>
+  </div>
+
+  <!-- Screen 3: Setup -->
+  <div class="screen" id="screen-3">
+    <h1>Setting up your environment</h1>
+    <p class="subtitle">This usually takes a few seconds.</p>
+    <div class="steps">
+      <div class="step" id="step-config">
+        <div class="step-icon">1</div>
+        <span>Loading configuration</span>
+      </div>
+      <div class="step" id="step-docker">
+        <div class="step-icon">2</div>
+        <span>Starting Docker services</span>
+      </div>
+      <div class="step" id="step-api">
+        <div class="step-icon">3</div>
+        <span>Connecting API</span>
+      </div>
+      <div class="step" id="step-strategy">
+        <div class="step-icon">4</div>
+        <span>Loading strategy engine</span>
+      </div>
+    </div>
+    <p id="ready-msg">Your environment is ready.</p>
+    <a href="/dashboard" class="btn" id="btn-dashboard">Open Dashboard</a>
+  </div>
+
+  <script>
+    let selectedLevel = null;
+    let selectedEnv = null;
+
+    function goToScreen(n) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + n).classList.add('active');
+      document.querySelectorAll('.progress-dot').forEach((d, i) => {
+        d.classList.toggle('active', i < n);
+      });
+    }
+
+    function selectLevel(level, el) {
+        selectedLevel = level;
+        document.querySelectorAll('#screen-1 .option').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+
+        // Beginner → auto select demo y bloquea broker
+        if (level === 'beginner') {
+            selectedEnv = 'demo';
+            document.getElementById('opt-demo').classList.add('selected');
+            document.getElementById('opt-broker').classList.remove('selected');
+            document.getElementById('opt-broker').style.opacity = '0.3';
+            document.getElementById('opt-broker').style.pointerEvents = 'none';
+        } else {
+            document.getElementById('opt-broker').style.opacity = '1';
+            document.getElementById('opt-broker').style.pointerEvents = 'auto';
+            selectedEnv = null;
+            document.getElementById('opt-demo').classList.remove('selected');
+            document.getElementById('opt-broker').classList.remove('selected');
+        }
+
+        document.getElementById('btn-continue').disabled = level === 'beginner' ? false : true;
+        if (level === 'beginner') selectedEnv = 'demo';
+
+        setTimeout(() => goToScreen(2), 300);
+    }
+
+    function selectEnv(env) {
+        if (selectedLevel === 'beginner' && env === 'broker') return;
+        selectedEnv = env;
+        document.getElementById('opt-demo').classList.toggle('selected', env === 'demo');
+        document.getElementById('opt-broker').classList.toggle('selected', env === 'broker');
+        document.getElementById('btn-continue').disabled = false;
+    }
+
+    function startSetup() {
+        if (!selectedEnv) return;
+        goToScreen(3);
+
+        const steps = ['config', 'docker', 'api', 'strategy'];
+    const base = [600, 1400, 2200, 3000];
+
+        steps.forEach((s, i) => {
+            const delay = base[i] + Math.floor(Math.random() * 800);
+            setTimeout(() => {
+                document.getElementById('step-' + s).classList.add('done');
+            }, delay);
+        });
+        setTimeout(() => {
+            document.getElementById('ready-msg').classList.add('show');
+            document.getElementById('btn-dashboard').style.display = 'inline-block';
+        }, 4200 + Math.floor(Math.random() * 600));
+    }
+  </script>
+</body>
+</html>
