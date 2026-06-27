@@ -126,8 +126,7 @@ Solo edita `config.yaml`:
 | Paper (testing) | `paper` |
 | MT5 real | `mt5` |
 | Topstep | `topstep` |
-| Shadow EdgeFix | `shadow_edgefix` |
-| Shadow Demo2 | `shadow_demo2` |
+| Shadow (solo lectura MT5) | `shadow` |
 
 Ejemplo MT5:
 
@@ -178,8 +177,6 @@ Tu estrategia no cambia. Solo el config.
 | `examples/breakout_strategy/` | Breakout de rango 20 velas |
 | `examples/mean_reversion_strategy/` | Reversión a la media (Bollinger simple) |
 | `examples/agnostic_strategy/` | Momentum agnóstico de broker |
-| `examples/shadow_edgefix/` | Shadow mode vs EdgeFix real |
-| `examples/shadow_demo2/` | Shadow mode vs Demo2 real |
 
 ```bash
 cd examples/simple_ema_strategy

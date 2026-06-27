@@ -141,14 +141,6 @@ class ExecutionEngine:
                 account_id=ts_cfg.get('account_id')
             )
 
-        elif conn_type == 'shadow_edgefix':
-            from edge_framework.connectors.mt5_edgefix import EdgeFixShadowConnector
-            return EdgeFixShadowConnector()
-
-        elif conn_type == 'shadow_demo2':
-            from edge_framework.connectors.mt5_demo2 import Demo2ShadowConnector
-            return Demo2ShadowConnector()
-
         else:
             from edge_framework.connectors.paper import PaperConnector
             logger.warning(f"Conector desconocido: {conn_type} — usando paper")

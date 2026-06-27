@@ -11,7 +11,7 @@ framework:
 
 # Conector de broker
 connector:
-  type: "mt5"           # mt5 | topstep | paper | shadow_edgefix | shadow_demo2
+  type: "mt5"           # mt5 | topstep | paper | shadow
   symbols:
     - "XAUUSD"
     - "US30.cash"

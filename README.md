@@ -73,10 +73,10 @@ python strategy.py
 
 | Broker | Tipo | Estado |
 |--------|------|--------|
-| FTMO | MT5 | Producción |
-| Topstep | API REST | Producción |
+| FTMO | MT5 | Produccion |
+| Topstep | API REST | Produccion |
 | Paper | Simulado | Incluido |
-| Shadow | Solo lectura | Incluido |
+| Shadow | Solo lectura MT5 | Avanzado |
 
 ---
 
@@ -112,8 +112,6 @@ edge_framework/
 │   ├── mt5.py             # MetaTrader 5
 │   ├── topstep.py         # Topstep API
 │   ├── paper.py           # Paper trading
-│   ├── mt5_edgefix.py     # Shadow EdgeFix
-│   ├── mt5_demo2.py       # Shadow Demo2
 │   └── instrument_mapper.py
 ├── risk/manager.py        # Circuit breaker, DD, position sizing
 ├── audit/logger.py        # Auditoría JSONL
