@@ -42,3 +42,9 @@ backups/
 # OS
 .DS_Store
 Thumbs.db
+
+# Interno (no publicar)
+beta/
+billing/
+landing/
+INVENTARIO_ALPHA_SAAS.md
