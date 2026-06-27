@@ -48,3 +48,7 @@ beta/
 billing/
 landing/
 INVENTARIO_ALPHA_SAAS.md
+edge_framework/connectors/mt5_edgefix.py
+edge_framework/connectors/mt5_demo2.py
+examples/shadow_edgefix/
+examples/shadow_demo2/
