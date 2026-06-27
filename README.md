@@ -34,7 +34,7 @@ EdgeFramework hace el resto: conexión al broker, riesgo automático, logs, reco
 ## Instalación
 
 ```bash
-git clone https://github.com/tu-usuario/edge-framework
+git clone https://github.com/BoltUltraFix/edge-framework
 cd edge-framework
 pip install -r requirements.txt
 ```
@@ -119,8 +119,6 @@ edge_framework/
 
 examples/                  # Estrategias de referencia
 docs/                      # Documentación
-billing/                   # Licencias y Stripe
-landing/                   # Landing page
 ```
 
 Flujo por ciclo:
