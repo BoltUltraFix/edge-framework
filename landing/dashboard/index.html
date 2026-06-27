@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdgeFramework — Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* NAV */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #1a1a1a;
+            background: #0d0d0d;
+        }
+        .nav-logo { font-weight: 900; font-size: 1.2rem; }
+        .nav-logo span { color: #00d4aa; }
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #00d4aa;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00d4aa;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .nav-time { color: #555; font-size: 0.85rem; }
+
+        /* LAYOUT */
+        .container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* GRID */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* CARDS */
+        .card {
+            background: #111;
+            border: 1px solid #1e1e1e;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .card-label {
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .card-sub {
+            font-size: 0.8rem;
+            color: #555;
+            margin-top: 0.3rem;
+        }
+        .green { color: #00d4aa; }
+        .red { color: #ff4444; }
+        .yellow { color: #f0b429; }
+        .gray { color: #888; }
+
+        /* STATUS BADGES */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-green { background: rgba(0,212,170,0.1); color: #00d4aa; }
+        .badge-red { background: rgba(255,68,68,0.1); color: #ff4444; }
+        .badge-gray { background: rgba(136,136,136,0.1); color: #888; }
+
+        /* SYSTEM STATUS */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #1a1a1a;
+            font-size: 0.85rem;
+        }
+        .status-item:last-child { border-bottom: none; }
+
+        /* RISK BAR */
+        .risk-bar-bg {
+            background: #1e1e1e;
+            border-radius: 4px;
+            height: 6px;
+            margin: 0.8rem 0;
+            overflow: hidden;
+        }
+        .risk-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: #00d4aa;
+            transition: width 1s ease;
+        }
+
+        /* HEALTH SCORE */
+        .health-score {
+            text-align: center;
+            padding: 1rem 0;
+        }
+        .health-number {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #00d4aa;
+            line-height: 1;
+        }
+        .health-label {
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+        }
+        .health-metrics {
+            margin-top: 1rem;
+        }
+        .health-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .health-metric:last-child { border-bottom: none; }
+
+        /* STRATEGIES */
+        .strategy-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #1a1a1a;
+            font-size: 0.9rem;
+        }
+        .strategy-item:last-child { border-bottom: none; }
+        .strategy-name { font-weight: 500; }
+        .strategy-meta { color: #555; font-size: 0.8rem; }
+
+        /* TRADES */
+        .trade-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #1a1a1a;
+            font-size: 0.85rem;
+        }
+        .trade-item:last-child { border-bottom: none; }
+        .trade-dir {
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+        .trade-buy { background: rgba(0,212,170,0.15); color: #00d4aa; }
+        .trade-sell { background: rgba(255,68,68,0.15); color: #ff4444; }
+
+        /* SECTION TITLE */
+        .section-title {
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .status-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logo">Edge<span>Framework</span></div>
+    <div class="nav-status">
+        <div class="dot"></div>
+        SYSTEM ONLINE
+    </div>
+    <div class="nav-time" id="clock">--:--:-- UTC</div>
+</nav>
+
+<div class="container">
+
+    <!-- ROW 1: KPIs principales -->
+    <div class="grid-4">
+        <div class="card">
+            <div class="card-label">Balance</div>
+            <div class="card-value green">$24,568</div>
+            <div class="card-sub">FTMO $25K Account</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Equity</div>
+            <div class="card-value">$24,621</div>
+            <div class="card-sub">Float: +$53.00</div>
+        </div>
+        <div class="card">
+            <div class="card-label">P&L Today</div>
+            <div class="card-value green" id="pnlValue">+$218.56</div>
+            <div class="card-sub">+0.89% of balance</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Open Positions</div>
+            <div class="card-value">2</div>
+            <div class="card-sub">XAUUSD · US30</div>
+        </div>
+    </div>
+
+    <!-- ROW 2: Risk + System + Health -->
+    <div class="grid-3">
+
+        <!-- RISK -->
+        <div class="card">
+            <div class="section-title">Risk Monitor</div>
+            <div class="status-item">
+                <span>Daily Loss Used</span>
+                <span class="green">0.18%</span>
+            </div>
+            <div class="risk-bar-bg">
+                <div class="risk-bar-fill" style="width: 18%;"></div>
+            </div>
+            <div class="status-item">
+                <span>Max Daily Loss</span>
+                <span class="gray">1.00%</span>
+            </div>
+            <div class="status-item">
+                <span>Total Drawdown</span>
+                <span class="green">0.37%</span>
+            </div>
+            <div class="status-item">
+                <span>Circuit Breaker</span>
+                <span class="badge badge-green">INACTIVE</span>
+            </div>
+            <div class="status-item">
+                <span>Risk Status</span>
+                <span class="badge badge-green">SAFE</span>
+            </div>
+        </div>
+
+        <!-- SYSTEM STATUS -->
+        <div class="card">
+            <div class="section-title">System Status</div>
+            <div class="status-grid">
+                <div>
+                    <div class="status-item">
+                        <span>Docker</span>
+                        <span class="badge badge-green">Running</span>
+                    </div>
+                    <div class="status-item">
+                        <span>API</span>
+                        <span class="badge badge-green">Healthy</span>
+                    </div>
+                    <div class="status-item">
+                        <span>MT5 Broker</span>
+                        <span class="badge badge-green">Connected</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="status-item">
+                        <span>Shadow Mode</span>
+                        <span class="badge badge-green">Active</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Latency</span>
+                        <span class="green">18 ms</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Uptime</span>
+                        <span class="green">99.8%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEALTH SCORE -->
+        <div class="card">
+            <div class="section-title">Edge Health Score</div>
+            <div class="health-score">
+                <div class="health-number" id="healthScore">94</div>
+                <div class="health-label">Overall Score</div>
+            </div>
+            <div class="health-metrics">
+                <div class="health-metric">
+                    <span>Execution</span>
+                    <span class="green">96</span>
+                </div>
+                <div class="health-metric">
+                    <span>Risk</span>
+                    <span class="green">92</span>
+                </div>
+                <div class="health-metric">
+                    <span>Latency</span>
+                    <span class="green">88</span>
+                </div>
+                <div class="health-metric">
+                    <span>Stability</span>
+                    <span class="green">95</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROW 3: Strategies + Trades -->
+    <div class="grid-2">
+
+        <!-- STRATEGIES -->
+        <div class="card">
+            <div class="section-title">Active Strategies</div>
+            <div class="strategy-item">
+                <div>
+                    <div class="strategy-name">EdgeFix Bot1</div>
+                    <div class="strategy-meta">FTMO $25K · MT5</div>
+                </div>
+                <span class="badge badge-green">RUNNING</span>
+            </div>
+            <div class="strategy-item">
+                <div>
+                    <div class="strategy-name">EdgeFix Bot2</div>
+                    <div class="strategy-meta">FTMO $100K · MT5</div>
+                </div>
+                <span class="badge badge-green">RUNNING</span>
+            </div>
+            <div class="strategy-item">
+                <div>
+                    <div class="strategy-name">EdgeFix Bot3</div>
+                    <div class="strategy-meta">FTMO $25K · Shadow</div>
+                </div>
+                <span class="badge badge-gray">SHADOW MODE</span>
+            </div>
+            <div class="strategy-item">
+                <div>
+                    <div class="strategy-name">Bot5Multi</div>
+                    <div class="strategy-meta">Topstep $150K · API</div>
+                </div>
+                <span class="badge badge-green">RUNNING</span>
+            </div>
+        </div>
+
+        <!-- RECENT TRADES -->
+        <div class="card">
+            <div class="section-title">Recent Trades</div>
+            <div class="trade-item">
+                <div>
+                    <span class="trade-dir trade-buy">BUY</span>
+                    <span>XAUUSD</span>
+                </div>
+                <div style="text-align:right">
+                    <div class="green">+$177.28</div>
+                    <div class="gray" style="font-size:0.75rem">trend_momentum · 07:20</div>
+                </div>
+            </div>
+            <div class="trade-item">
+                <div>
+                    <span class="trade-dir trade-sell">SELL</span>
+                    <span>XAUUSD</span>
+                </div>
+                <div style="text-align:right">
+                    <div class="green">+$266.88</div>
+                    <div class="gray" style="font-size:0.75rem">trend_momentum · 07:20</div>
+                </div>
+            </div>
+            <div class="trade-item">
+                <div>
+                    <span class="trade-dir trade-buy">BUY</span>
+                    <span>US30.cash</span>
+                </div>
+                <div style="text-align:right">
+                    <div class="green">+$283.04</div>
+                    <div class="gray" style="font-size:0.75rem">fib_786_entry · 08:39</div>
+                </div>
+            </div>
+            <div class="trade-item">
+                <div>
+                    <span class="trade-dir trade-sell">SELL</span>
+                    <span>XAUUSD</span>
+                </div>
+                <div style="text-align:right">
+                    <div class="red">-$120.48</div>
+                    <div class="gray" style="font-size:0.75rem">xau_trend_fo · 09:10</div>
+                </div>
+            </div>
+            <div class="trade-item">
+                <div>
+                    <span class="trade-dir trade-buy">BUY</span>
+                    <span>US100.cash</span>
+                </div>
+                <div style="text-align:right">
+                    <div class="green">+$199.46</div>
+                    <div class="gray" style="font-size:0.75rem">trend_momentum · 09:50</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Clock UTC
+    function updateClock() {
+        const now = new Date();
+        const h = String(now.getUTCHours()).padStart(2, '0');
+        const m = String(now.getUTCMinutes()).padStart(2, '0');
+        const s = String(now.getUTCSeconds()).padStart(2, '0');
+        document.getElementById('clock').textContent = h + ':' + m + ':' + s + ' UTC';
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Health score animado
+    let score = 0;
+    const target = 94;
+    const interval = setInterval(() => {
+        if (score < target) {
+            score++;
+            document.getElementById('healthScore').textContent = score;
+        } else {
+            clearInterval(interval);
+        }
+    }, 20);
+
+    // P&L simulado (fluctúa levemente)
+    function updatePnL() {
+        const base = 218.56;
+        const variation = (Math.random() - 0.5) * 5;
+        const pnl = (base + variation).toFixed(2);
+        const el = document.getElementById('pnlValue');
+        if (el) {
+            el.textContent = (pnl >= 0 ? '+' : '') + '$' + pnl;
+        }
+    }
+    setInterval(updatePnL, 5000);
+</script>
+
+</body>
+</html>
