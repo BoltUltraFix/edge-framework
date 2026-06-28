@@ -1,5 +1,6 @@
-/gracias    /gracias.html   200
-/dashboard  /dashboard/index.html   200
-/dashboard/ /dashboard/index.html   200
-/onboarding /onboarding.html  200
-/onboarding/ /onboarding.html  200
+/gracias     /gracias.html          200
+/dashboard   /dashboard/index.html  200
+/dashboard/  /dashboard/index.html  200
+/onboarding  /onboarding.html       200
+/onboarding/ /onboarding.html       200
+/start       /onboarding.html       200
