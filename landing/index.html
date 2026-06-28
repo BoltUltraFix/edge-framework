@@ -801,5 +801,124 @@ engine.start_from_config()
       }
     });
   </script>
+
+<!-- LIVE WIDGET -->
+<div id="live-widget" style="
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    min-width: 210px;
+    z-index: 999;
+    font-family: Inter, sans-serif;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+">
+    <!-- Header LIVE -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+            <div style="
+                width:8px;height:8px;border-radius:50%;
+                background:#00d4aa;
+                animation:pulse 2s infinite;
+            "></div>
+            <span style="font-size:0.75rem;color:#00d4aa;font-weight:700;letter-spacing:1px">LIVE</span>
+        </div>
+        <div id="live-bot-status" style="
+            font-size:0.7rem;font-weight:700;
+            padding:0.2rem 0.5rem;border-radius:10px;
+            background:rgba(0,212,170,0.1);
+            color:#00d4aa;
+        ">RUNNING</div>
+    </div>
+
+    <!-- Balance -->
+    <div style="font-size:0.7rem;color:#555;text-transform:uppercase;letter-spacing:1px">Balance</div>
+    <div id="live-balance" style="font-size:1.4rem;font-weight:700;color:#fff;margin:0.2rem 0 0.8rem">--</div>
+
+    <!-- P&L -->
+    <div style="font-size:0.7rem;color:#555;text-transform:uppercase;letter-spacing:1px">Today's P&L</div>
+    <div id="live-pnl" style="font-size:1rem;font-weight:600;color:#00d4aa;margin:0.2rem 0 0.8rem">--</div>
+
+    <!-- Posiciones -->
+    <div style="font-size:0.7rem;color:#555;text-transform:uppercase;letter-spacing:1px">Open Positions</div>
+    <div id="live-positions" style="font-size:1rem;font-weight:600;color:#fff;margin:0.2rem 0 0.8rem">--</div>
+
+    <!-- Updated ago -->
+    <div id="live-updated" style="font-size:0.7rem;color:#333;border-top:1px solid #1a1a1a;padding-top:0.6rem">
+        Connecting...
+    </div>
+</div>
+
+<script>
+const LIVE_API = 'https://cosigner-diminish-stalling.ngrok-free.dev';
+let lastUpdate = null;
+
+// Actualizar "X sec ago"
+setInterval(() => {
+    if (!lastUpdate) return;
+    const sec = Math.floor((Date.now() - lastUpdate) / 1000);
+    document.getElementById('live-updated').textContent =
+        'Updated ' + sec + ' sec ago';
+}, 1000);
+
+async function updateLiveWidget() {
+    try {
+        // Timeout de 5 segundos
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+
+        const res = await fetch(LIVE_API + '/metrics', {
+            signal: controller.signal,
+            headers: { 'ngrok-skip-browser-warning': '1' }
+        });
+        clearTimeout(timeout);
+
+        const data = await res.json();
+        lastUpdate = Date.now();
+
+        if (data.account) {
+            const balance = data.account.balance;
+            const pnl = data.account.daily_pnl;
+            const positions = data.account.positions_count;
+
+            // Balance
+            document.getElementById('live-balance').textContent =
+                '$' + balance.toLocaleString('en-US', {minimumFractionDigits:2});
+
+            // P&L
+            const pnlEl = document.getElementById('live-pnl');
+            pnlEl.textContent = (pnl >= 0 ? '+' : '') +
+                '$' + Math.abs(pnl).toLocaleString('en-US', {minimumFractionDigits:2});
+            pnlEl.style.color = pnl >= 0 ? '#00d4aa' : '#ff4444';
+
+            // Posiciones
+            document.getElementById('live-positions').textContent = positions;
+        }
+
+        // Bot status
+        if (data.bots && data.bots.length > 0) {
+            const running = data.bots.some(b => b.running);
+            const statusEl = document.getElementById('live-bot-status');
+            statusEl.textContent = running ? 'RUNNING' : 'STOPPED';
+            statusEl.style.background = running
+                ? 'rgba(0,212,170,0.1)' : 'rgba(255,68,68,0.1)';
+            statusEl.style.color = running ? '#00d4aa' : '#ff4444';
+        }
+
+    } catch(e) {
+        document.getElementById('live-balance').textContent = 'Offline';
+        document.getElementById('live-pnl').textContent = '--';
+        document.getElementById('live-bot-status').textContent = 'OFFLINE';
+        document.getElementById('live-bot-status').style.color = '#ff4444';
+        document.getElementById('live-updated').textContent = 'API not available';
+    }
+}
+
+updateLiveWidget();
+setInterval(updateLiveWidget, 30000);
+</script>
 </body>
 </html>
