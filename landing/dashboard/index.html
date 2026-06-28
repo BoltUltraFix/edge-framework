@@ -502,6 +502,112 @@
         }
     }
     setInterval(updatePnL, 5000);
+
+    const API_URL = 'https://cosigner-diminish-stalling.ngrok-free.dev';
+
+    async function fetchMetrics() {
+        try {
+            const res = await fetch(API_URL + '/metrics', {
+                headers: { 'ngrok-skip-browser-warning': '1' }
+            });
+            const data = await res.json();
+            updateDashboard(data);
+        } catch(e) {
+            console.warn('API no disponible — usando datos estáticos');
+        }
+    }
+
+    function updateDashboard(data) {
+        // Account
+        if (data.account) {
+            const a = data.account;
+            document.querySelector('.card-value.green').textContent =
+                '$' + a.balance.toLocaleString('en-US', {minimumFractionDigits:2});
+
+            // Equity (segunda card)
+            const cards = document.querySelectorAll('.card-value');
+            if (cards[1]) cards[1].textContent =
+                '$' + a.equity.toLocaleString('en-US', {minimumFractionDigits:2});
+
+            // P&L
+            const pnl = a.daily_pnl;
+            if (cards[2]) {
+                cards[2].textContent = (pnl >= 0 ? '+' : '') +
+                    '$' + pnl.toLocaleString('en-US', {minimumFractionDigits:2});
+                cards[2].className = 'card-value ' + (pnl >= 0 ? 'green' : 'red');
+            }
+
+            // Posiciones
+            if (cards[3]) cards[3].textContent = a.positions_count;
+
+            // Risk bar
+            const riskBar = document.querySelector('.risk-bar-fill');
+            if (riskBar) riskBar.style.width = (data.risk?.daily_loss_used_pct * 100) + '%';
+
+            // Risk pct
+            const riskItems = document.querySelectorAll('.status-item span:last-child');
+            if (riskItems[0]) riskItems[0].textContent =
+                (data.risk?.daily_loss_used_pct || 0).toFixed(2) + '%';
+        }
+
+        // Health Score
+        if (data.health) {
+            const h = data.health;
+            document.getElementById('healthScore').textContent = h.overall;
+            const metrics = document.querySelectorAll('.health-metric span:last-child');
+            if (metrics[0]) metrics[0].textContent = h.execution;
+            if (metrics[1]) metrics[1].textContent = h.risk;
+            if (metrics[2]) metrics[2].textContent = h.latency;
+            if (metrics[3]) metrics[3].textContent = h.stability;
+        }
+
+        // Bots status
+        if (data.bots) {
+            const badges = document.querySelectorAll('.strategy-item .badge');
+            data.bots.forEach((bot, i) => {
+                if (badges[i]) {
+                    badges[i].textContent = bot.status;
+                    badges[i].className = 'badge ' +
+                        (bot.running ? 'badge-green' : 'badge-red');
+                }
+            });
+        }
+
+        // Recent trades
+        if (data.recent_trades && data.recent_trades.length > 0) {
+            const tradesContainer = document.querySelector('.card:last-child');
+            if (tradesContainer) {
+                const title = tradesContainer.querySelector('.section-title');
+                let html = title ? title.outerHTML : '';
+                data.recent_trades.slice(-5).reverse().forEach(t => {
+                    const isWin = t.pnl >= 0;
+                    html += '<div class="trade-item">' +
+                        '<div><span class="trade-dir ' +
+                        (t.direction === 'BUY' ? 'trade-buy' : 'trade-sell') +
+                        '">' + t.direction + '</span>' +
+                        '<span>' + t.symbol + '</span></div>' +
+                        '<div style="text-align:right">' +
+                        '<div class="' + (isWin ? 'green' : 'red') + '">' +
+                        (isWin ? '+' : '') + '$' + Math.abs(t.pnl).toFixed(2) + '</div>' +
+                        '<div class="gray" style="font-size:0.75rem">' +
+                        t.strategy + ' · ' + t.time + '</div>' +
+                        '</div></div>';
+                });
+                tradesContainer.innerHTML = html;
+            }
+        }
+
+        // Timestamp
+        const clock = document.getElementById('clock');
+        if (clock && data.timestamp) {
+            const ts = new Date(data.timestamp);
+            clock.textContent = ts.toUTCString().slice(17, 25) + ' UTC';
+        }
+    }
+
+    // Fetch inmediato y luego cada 30s
+    fetchMetrics();
+    setInterval(fetchMetrics, 30000);
 </script>
 
 </body>
