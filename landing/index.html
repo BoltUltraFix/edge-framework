@@ -853,7 +853,16 @@ engine.start_from_config()
 </div>
 
 <script>
-const LIVE_API = 'https://cosigner-diminish-stalling.ngrok-free.dev';
+function getLiveApiUrl() {
+    const DEFAULT = 'https://cosigner-diminish-stalling.ngrok-free.dev';
+    const expire = localStorage.getItem('edge_api_expire');
+    const saved = localStorage.getItem('edge_api_url');
+    if (saved && expire && Date.now() < parseInt(expire)) {
+        return saved;
+    }
+    return DEFAULT;
+}
+const LIVE_API = getLiveApiUrl();
 let lastUpdate = null;
 
 // Actualizar "X sec ago"

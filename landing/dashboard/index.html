@@ -503,7 +503,42 @@
     }
     setInterval(updatePnL, 5000);
 
-    const API_URL = 'https://cosigner-diminish-stalling.ngrok-free.dev';
+    // URL dinámica con validación y expiración 24h
+    function getApiUrl() {
+        const DEFAULT = 'https://cosigner-diminish-stalling.ngrok-free.dev';
+
+        // Override via query param (desde Telegram)
+        const urlParams = new URLSearchParams(window.location.search);
+        const apiParam = urlParams.get('api');
+        if (apiParam) {
+            try {
+                const parsed = new URL(apiParam);
+                if (parsed.hostname.endsWith('.ngrok-free.app') ||
+                    parsed.hostname.endsWith('.ngrok-free.dev') ||
+                    parsed.hostname.endsWith('.ngrok.io')) {
+                    localStorage.setItem('edge_api_url', apiParam);
+                    localStorage.setItem('edge_api_expire',
+                        Date.now() + 1000 * 60 * 60 * 24);
+                }
+            } catch(e) {
+                console.warn('Invalid API URL param');
+            }
+        }
+
+        // Leer de localStorage si no expiró
+        const expire = localStorage.getItem('edge_api_expire');
+        const saved = localStorage.getItem('edge_api_url');
+        if (saved && expire && Date.now() < parseInt(expire)) {
+            return saved;
+        }
+
+        // Limpiar si expiró
+        localStorage.removeItem('edge_api_url');
+        localStorage.removeItem('edge_api_expire');
+        return DEFAULT;
+    }
+
+    const API_URL = getApiUrl();
 
     async function fetchMetrics() {
         try {
